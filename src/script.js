@@ -50,18 +50,16 @@ class Todo {
 
     try {
       const parsedData = JSON.parse(rawData)
+
       return Array.isArray(parsedData) ? parsedData : []
     } catch {
-      console.error('Todo items parse error')
+      console.log('Todo items parse error')
       return []
     }
   }
 
   saveItemsToLocalStorage() {
-    localStorage.setItem(
-      this.localStorageKey,
-      JSON.stringify(this.state.items)
-    )
+    localStorage.setItem(this.localStorageKey, JSON.stringify(this.state.items))
   }
 
   render() {
@@ -69,47 +67,35 @@ class Todo {
 
     this.deleteAllButtonElement.classList.toggle(
       this.stateClasses.isVisible,
-      this.state.items.length > 0
+      this.state.items.length > 0, //
     )
 
     const items = this.state.filteredItems ?? this.state.items
 
-    this.listElement.innerHTML = items.map(({ id, title, isChecked }) => `
+    this.listElement.innerHTML = items
+      .map(
+        ({id, title, isChecked}) => /*html*/ `
       <li class="todo__item todo-item" data-js-todo-item>
-        <input
-          class="todo-item__checkbox"
-          id="${id}"
-          type="checkbox"
-          ${isChecked ? 'checked' : ''}
-          data-js-todo-item-checkbox
-        />
-        <label
-          class="todo-item__label"
-          for="${id}"
-          data-js-todo-item-label
-        >
-          ${title}
-        </label>
-        <button
-          class="todo-item__delete-button"
-          data-js-todo-item-delete-button
-          aria-label="Delete"
-          title="Delete"
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </li>
-    `).join('')
+          <input class="todo-item__checkbox" id="${id}" type="checkbox" ${isChecked ? 'checked' : ''} data-js-todo-item-checkbox />
+          <label for="${id}" class="todo-item__label" data-js-todo-item-label>${title}</label>
+          <button class="todo-item__delete-button" type="button" aria-label="Delete" title="Delete" data-js-todo-item-delete-button>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </li>
+    `,
+      )
+      .join('')
 
     const isEmptyFilteredItems = this.state.filteredItems?.length === 0
     const isEmptyItems = this.state.items.length === 0
 
-    this.emptyMessageElement.textContent =
-      isEmptyFilteredItems ? 'Tasks not found'
-        : isEmptyItems ? 'There are no tasks yet'
-          : ''
+    this.emptyMessageElement.textContent = isEmptyFilteredItems
+      ? 'Tasks not found'
+      : isEmptyItems
+        ? 'There are not tasks yet'
+        : ''
   }
 
   addItem(title) {
@@ -146,12 +132,11 @@ class Todo {
   filter() {
     const queryFormatted = this.state.searchQuery.toLowerCase()
 
-    this.state.filteredItems = this.state.items.filter(({ title }) => {
+    this.state.filteredItems = this.state.items.filter(({title}) => {
       const titleFormatted = title.toLowerCase()
 
       return titleFormatted.includes(queryFormatted)
     })
-
     this.render()
   }
 
@@ -178,7 +163,7 @@ class Todo {
     event.preventDefault()
   }
 
-  onSearchTaskInputChange = ({ target }) => {
+  onSearchTaskInputChange = ({target}) => {
     const value = target.value.trim()
 
     if (value.length > 0) {
@@ -199,7 +184,7 @@ class Todo {
     }
   }
 
-  onClick = ({ target }) => {
+  onClick = ({target}) => {
     if (target.matches(this.selectors.itemDeleteButton)) {
       const itemElement = target.closest(this.selectors.item)
       const itemCheckboxElement = itemElement.querySelector(this.selectors.itemCheckbox)
@@ -212,7 +197,7 @@ class Todo {
     }
   }
 
-  onChange = ({ target }) => {
+  onChange = ({target}) => {
     if (target.matches(this.selectors.itemCheckbox)) {
       this.toggleCheckedState(target.id)
     }
